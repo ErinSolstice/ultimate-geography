@@ -1,0 +1,75 @@
+- generate_guids_in_csv:
+    source: src/data/guid.csv
+    columns:
+      - guid
+        
+- build_parts:
+  - note_model_from_yaml_part:
+      part_id: Ultimate Geography
+      file: src/note_models/Ultimate_Geography.yaml
+
+  - headers_from_yaml_part:
+      - part_id: default header
+        file: src/headers/default.yaml
+        override:
+          deck_description_html_file: src/headers/desc.html
+          crowdanki_uuid: 43c5ba66-9a65-11e8-90c9-a0481cc15658
+          name: Ultimate Geography
+
+  - media_group_from_folder:
+      - part_id: maps
+        source: src/media/maps
+        recursive: true
+      - part_id: flags
+        source: src/media/flags
+        recursive: true
+
+
+  - notes_from_csvs:
+      part_id: english
+      # save_to_file: src/notes/english.yaml
+
+      note_model_mappings:
+        - note_models: &note_models_in_mapping
+            - Ultimate Geography
+          columns_to_fields:
+            <<: &default_columns_to_fields
+              flag: Flag
+              map: Map
+              tags: tags
+
+            guid             : guid
+            country          : Country
+            country info     : Country info
+            capital          : Capital
+            capital info     : Capital info
+            capital hint     : Capital hint
+            flag similarity  : Flag similarity
+
+          personal_fields: [ ]
+
+      file_mappings: &file_mappings
+        - file: src/data/main.csv
+          note_model: Ultimate Geography
+          derivatives:
+            - file: src/data/guid.csv
+            - file: src/data/country.csv
+            - file: src/data/country.csv
+            - file: src/data/country_info.csv
+            - file: src/data/capital.csv
+            - file: src/data/capital_info.csv
+            - file: src/data/capital_hint.csv
+            - file: src/data/flag_similarity.csv
+
+- generate_crowd_anki:
+    <<: &default_crowd_anki_gen
+      headers: default header
+      media:
+        parts: [maps, flags]
+      note_models:
+        parts:
+          - part_id: Ultimate Geography
+
+    folder: build/Ultimate Geography [EN]
+    notes:
+      part_id: english
